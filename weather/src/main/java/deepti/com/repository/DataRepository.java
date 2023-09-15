@@ -3,7 +3,6 @@ package deepti.com.repository;
 import deepti.com.model.Data;
 import deepti.com.model.DataRowMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
