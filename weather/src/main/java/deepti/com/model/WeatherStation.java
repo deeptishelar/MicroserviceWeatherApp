@@ -21,10 +21,22 @@ public class WeatherStation {
     double latitude;
     @Column(name = "longitude")
     double longitude;
-    @OneToMany(targetEntity = Variable.class)
+    @OneToMany(targetEntity = Variable.class, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "id")
     List<Variable> variable;
 
+    public WeatherStation() {
+    }
+
+    public WeatherStation(int id, String wsName, String portfolio, String site, String state, double latitude, double longitude) {
+        this.id = id;
+        this.wsName = wsName;
+        this.portfolio = portfolio;
+        this.site = site;
+        this.state = state;
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
 
     public int getId() {
         return id;
@@ -45,20 +57,6 @@ public class WeatherStation {
         return site;
     }
 
-
-    public String getState() {
-        return state;
-    }
-
-
-    public double getLatitude() {
-        return latitude;
-    }
-
-
-    public double getLongitude() {
-        return longitude;
-    }
 
 
     public List<Variable> getVariable() {
