@@ -15,7 +15,7 @@ public class WeatherController {
     @Autowired
     WeatherService service;
     @GetMapping(path="/getWeatherInfo")
-    public WeatherInfo getWeatherInfo(@RequestParam String wsId)
+    public WeatherInfo getWeatherInfo(@RequestParam int wsId)
     {
         return service.getWeatherInfo(wsId);
     }
@@ -24,5 +24,10 @@ public class WeatherController {
     public List<WeatherStation> getWeatherStations()
     {
         return service.getWeatherStations();
+    }
+    @GetMapping(path="/getWeatherStationsForState")
+    public List<WeatherStation> getWeatherStationsForState(@RequestParam String state)
+    {
+        return service.getWeatherStationsForState(state);
     }
 }
