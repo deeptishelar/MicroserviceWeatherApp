@@ -5,6 +5,7 @@ import deepti.com.exception.EntityNotFoundException;
 import deepti.com.model.*;
 import deepti.com.repository.DataRepository;
 import deepti.com.repository.WeatherRepository;
+import deepti.com.util.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,18 +21,34 @@ public class WeatherService {
     @Autowired
     DataRepository dataRepository;
 
+    /**
+     * fetches the weather stations for the given state
+     * if not specified, then fetches all
+     * @param state stae
+     * @return List of weatherStation object
+     */
     public List<WeatherStation> getWeatherStationsForState(String state) {
         if(state.isEmpty())
             return weatherRepository.findAll();
         else
             return weatherRepository.findByState(state);
     }
+    /**
+     * fetches all the weather stations
+     * @return List of weatherStation object
+     */
     public List<WeatherStation> getWeatherStations() {
             return weatherRepository.findAll();
     }
-
-    public WeatherInfo getWeatherInfo(int wsId) {
-        WeatherStation weatherStation = getWeatherStation(wsId);
+    /**
+     * fetches the weather info for the given weather stationId
+     * if not specified, then fetches all
+     * @param weatherStationId weatherStationId
+     * @return List of weatherInfo object
+     * @throws DataNotFoundException if no data table found
+     */
+    public WeatherInfo getWeatherInfo(int weatherStationId) {
+        WeatherStation weatherStation = getWeatherStation(weatherStationId);
         List<Variable> variables = weatherStation.getVariable();
         String sql = buildDataSql(variables, String.valueOf(weatherStation.getId()));
         List<VariableValueUnit> dataList = new ArrayList<>();
@@ -45,26 +62,39 @@ public class WeatherService {
                     dataList.add(new VariableValueUnit(var.getLongName(), var.getUnit(), values.get(index++)));
                 }
             }
-            time = formatDate(data.getTimestamp());
-
+            time = Util.formatDate(data.getTimestamp());
         } catch (Exception e) {
-            throw new DataNotFoundException("Error occurred while fetching weather data, please make sure the data is populated in the DB for weather station with id=" + wsId);
+            throw new DataNotFoundException("Error occurred while fetching weather data, please make sure the data is populated in the DB for weather station with id=" + weatherStationId);
         }
         return new WeatherInfo(weatherStation.getWsName(),
-                weatherStation.getPortfolio(), weatherStation.getSite(),
+                weatherStation.getSite(), weatherStation.getPortfolio(),
                 dataList, time);
     }
 
-    public WeatherStation getWeatherStation(int wsId) {
-        WeatherStation weatherStation = weatherRepository.findById(wsId).isPresent() ?
-                weatherRepository.findById(wsId).get() : null;
+    /**
+     * Fetches the weather station with given id
+     * @param weatherStationId
+     * @return the matching weatherStation
+     * @throws EntityNotFoundException if no station found
+     */
+    public WeatherStation getWeatherStation(int weatherStationId) {
+        WeatherStation weatherStation = weatherRepository.findById(weatherStationId).isPresent() ?
+                weatherRepository.findById(weatherStationId).get() : null;
         if (weatherStation == null) {
-            throw new EntityNotFoundException("Weather Station : " + wsId);
+            throw new EntityNotFoundException("Weather Station : " + weatherStationId);
         }
         return weatherStation;
     }
 
-    private static String buildDataSql(List<Variable> variables, String wsId) {
+    /**
+     * builds a dynamic SQL based on the variables data and the data tables
+     * @param variables table data
+     * @param weatherStationId weather station id
+     * @return SQL on the data tables.
+     * @throws EntityNotFoundException if Variable not found
+     */
+
+    private static String buildDataSql(List<Variable> variables, String weatherStationId) {
         if (!variables.isEmpty()) {
             StringBuilder sql = new StringBuilder("SELECT ");
             sql.append(" timestamp, ");
@@ -74,16 +104,13 @@ public class WeatherService {
                 sql.append(",");
             }
             sql.replace(sql.lastIndexOf(","), sql.length(), "");
-            sql.append(" FROM data_").append(wsId);
+            sql.append(" FROM data_").append(weatherStationId);
             sql.append(" ORDER BY timestamp desc limit 1");
             return sql.toString();
         } else {
-            throw new EntityNotFoundException("Variable : " + wsId);
+            throw new EntityNotFoundException("Variable : " + weatherStationId);
         }
     }
 
-    private String formatDate(Date date) {
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-        return dateFormat.format(date);
-    }
+
 }
