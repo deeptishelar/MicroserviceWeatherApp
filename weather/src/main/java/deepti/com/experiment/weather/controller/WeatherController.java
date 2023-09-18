@@ -25,4 +25,9 @@ public class WeatherController {
     {
         return service.getWeatherStations();
     }
+    @GetMapping(path="/getWeatherStationsForState")
+    public List<WeatherStation> getWeatherStationsForState(@RequestParam String state)
+    {
+        return service.getWeatherStationsForState(state);
+    }
 }

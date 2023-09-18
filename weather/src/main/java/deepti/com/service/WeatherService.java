@@ -20,8 +20,14 @@ public class WeatherService {
     @Autowired
     DataRepository dataRepository;
 
+    public List<WeatherStation> getWeatherStationsForState(String state) {
+        if(state.isEmpty())
+            return weatherRepository.findAll();
+        else
+            return weatherRepository.findByState(state);
+    }
     public List<WeatherStation> getWeatherStations() {
-        return weatherRepository.findAll();
+            return weatherRepository.findAll();
     }
 
     public WeatherInfo getWeatherInfo(int wsId) {

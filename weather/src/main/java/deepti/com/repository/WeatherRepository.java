@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface WeatherRepository extends JpaRepository<WeatherStation, Integer> {
 
+    List<WeatherStation> findByState(String state);
 }

@@ -24,5 +24,4 @@ class WeatherApplicationTests {
 		assertNotNull(weatherStations);
 
 	}
-
 }

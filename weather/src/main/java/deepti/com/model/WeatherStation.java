@@ -56,9 +56,6 @@ public class WeatherStation {
     public String getSite() {
         return site;
     }
-
-
-
     public List<Variable> getVariable() {
         return variable;
     }
