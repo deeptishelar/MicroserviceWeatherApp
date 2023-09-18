@@ -19,43 +19,17 @@ public class Variable {
     private String longName;
 
 
-    public int getVarId() {
-        return varId;
-    }
-
-    public void setVarId(int varId) {
-        this.varId = varId;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public String getUnit() {
         return unit;
-    }
-
-    public void setUnit(String unit) {
-        this.unit = unit;
     }
 
     public String getLongName() {
         return longName;
     }
 
-    public void setLongName(String longName) {
-        this.longName = longName;
-    }
 }

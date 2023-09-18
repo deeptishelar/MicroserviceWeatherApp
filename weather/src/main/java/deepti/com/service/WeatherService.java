@@ -33,11 +33,11 @@ public class WeatherService {
     public WeatherInfo getWeatherInfo(int wsId) {
         WeatherStation weatherStation = getWeatherStation(wsId);
         List<Variable> variables = weatherStation.getVariable();
-        StringBuilder sql = buildDataSql(variables, String.valueOf(weatherStation.getId()));
+        String sql = buildDataSql(variables, String.valueOf(weatherStation.getId()));
         List<VariableValueUnit> dataList = new ArrayList<>();
         String time;
         try {
-            Data data = dataRepository.getData(sql.toString()).isPresent() ? dataRepository.getData(sql.toString()).get() : null;
+            Data data = dataRepository.getData(sql).isPresent() ? dataRepository.getData(sql).get() : null;
             List<Double> values = data.getValues();
             int index = 0;
             if (variables.size() == values.size()) {
@@ -50,11 +50,9 @@ public class WeatherService {
         } catch (Exception e) {
             throw new DataNotFoundException("Error occurred while fetching weather data, please make sure the data is populated in the DB for weather station with id=" + wsId);
         }
-        WeatherInfo weatherInfo = new WeatherInfo(weatherStation.getWsName(),
+        return new WeatherInfo(weatherStation.getWsName(),
                 weatherStation.getPortfolio(), weatherStation.getSite(),
                 dataList, time);
-        System.out.println(weatherInfo);
-        return weatherInfo;
     }
 
     public WeatherStation getWeatherStation(int wsId) {
@@ -66,7 +64,7 @@ public class WeatherService {
         return weatherStation;
     }
 
-    private static StringBuilder buildDataSql(List<Variable> variables, String wsId) {
+    private static String buildDataSql(List<Variable> variables, String wsId) {
         if (!variables.isEmpty()) {
             StringBuilder sql = new StringBuilder("SELECT ");
             sql.append(" timestamp, ");
@@ -78,12 +76,10 @@ public class WeatherService {
             sql.replace(sql.lastIndexOf(","), sql.length(), "");
             sql.append(" FROM data_").append(wsId);
             sql.append(" ORDER BY timestamp desc limit 1");
-            System.out.println("SQL : "+sql);
-            return sql;
+            return sql.toString();
         } else {
             throw new EntityNotFoundException("Variable : " + wsId);
         }
-
     }
 
     private String formatDate(Date date) {
