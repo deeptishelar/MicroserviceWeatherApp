@@ -67,7 +67,7 @@ public class WeatherService {
             throw new DataNotFoundException("Error occurred while fetching weather data, please make sure the data is populated in the DB for weather station with id=" + weatherStationId);
         }
         return new WeatherInfo(weatherStation.getWsName(),
-                weatherStation.getPortfolio(), weatherStation.getSite(),
+                weatherStation.getSite(), weatherStation.getPortfolio(),
                 dataList, time);
     }
 
